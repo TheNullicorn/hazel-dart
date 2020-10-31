@@ -14,12 +14,12 @@ import 'udp.dart';
 
 class BasicUdpConnectionListener extends UdpConnectionListener {
   @override
-  final IPEndPoint endpoint;
+  final IPEndpoint endpoint;
 
   @override
   final InternetAddressType ipMode;
 
-  final Map<IPEndPoint, BasicUdpServerConnection> _allConnections = {};
+  final Map<IPEndpoint, BasicUdpServerConnection> _allConnections = {};
   RawDatagramSocket _socket;
   Timer _reliablePacketTimer;
   bool _acceptingConnections = false;
@@ -69,7 +69,7 @@ class BasicUdpConnectionListener extends UdpConnectionListener {
     // 4 bytes = send option + packet ID + Hazel version
     var isHello = datagram.data[0] == UdpSendOption.hello.value &&
         datagram.data.length >= 4;
-    var remoteEndpoint = IPEndPoint(datagram.address, datagram.port);
+    var remoteEndpoint = IPEndpoint(datagram.address, datagram.port);
 
     var connection = _allConnections[remoteEndpoint];
     ByteBuffer msg;
@@ -109,13 +109,13 @@ class BasicUdpConnectionListener extends UdpConnectionListener {
     }
   }
 
-  void _sendData(Uint8List data, IPEndPoint remoteEndpoint) {
+  void _sendData(Uint8List data, IPEndpoint remoteEndpoint) {
     try {
       _socket.send(data, remoteEndpoint.address, remoteEndpoint.port);
     } catch (_) {}
   }
 
-  void _removeConnectionTo(IPEndPoint endPoint) {
+  void _removeConnectionTo(IPEndpoint endpoint) {
     _allConnections.remove(endpoint);
   }
 }
@@ -124,7 +124,7 @@ class BasicUdpServerConnection extends UdpConnection with UdpProtocol {
   final BasicUdpConnectionListener listener;
 
   @override
-  final IPEndPoint endpoint;
+  final IPEndpoint endpoint;
 
   @override
   final InternetAddressType ipMode;
@@ -137,7 +137,7 @@ class BasicUdpServerConnection extends UdpConnection with UdpProtocol {
   }
 
   @override
-  IPEndPoint get remoteEndpoint => endpoint;
+  IPEndpoint get remoteEndpoint => endpoint;
 
   @override
   void connect(Uint8List bytes, [Duration timeout]) {

@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:hazel_dart/src/pool.dart';
-
+import 'pool.dart';
 import 'send_option.dart';
 
 final Pool<ByteBuffer> _pool = Pool(() => ByteBuffer());

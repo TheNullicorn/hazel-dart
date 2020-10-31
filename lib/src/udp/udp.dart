@@ -6,6 +6,9 @@ import '../network_connection.dart';
 import 'client_connection.dart';
 import 'connection_listener.dart';
 
+// LAN broadcaster/listener
+export 'broadcast.dart';
+
 /// Represents a connection that uses the UDP protocol.
 abstract class UdpConnection extends NetworkConnection {
   UdpConnection();
@@ -15,7 +18,7 @@ abstract class UdpConnection extends NetworkConnection {
   ///
   /// This will not connect the client, and [UdpConnection.connect] will need
   /// to be called manually.
-  factory UdpConnection.client(IPEndPoint toAddress,
+  factory UdpConnection.client(IPEndpoint toAddress,
       [InternetAddressType ipMode]) {
     if (toAddress == null) throw ArgumentError.notNull('toAddress');
 
@@ -40,7 +43,7 @@ abstract class UdpConnectionListener extends NetworkConnectionListener {
   /// be a reason code, message, etc).
   ///
   /// If this function is undefined, then all connections will be accepted.
-  Uint8List Function(IPEndPoint remoteEndpoint, Uint8List input)
+  Uint8List Function(IPEndpoint remoteEndpoint, Uint8List input)
       onConnectionInit;
 
   /// The current number of connections that this listener recognizes (CCU).
@@ -51,7 +54,7 @@ abstract class UdpConnectionListener extends NetworkConnectionListener {
   ///
   /// This factory does not actually bind the server to [bindAddress], and you
   /// will need to do that yourself using [ConnectionListener.start].
-  factory UdpConnectionListener.server(IPEndPoint bindAddress,
+  factory UdpConnectionListener.server(IPEndpoint bindAddress,
       [InternetAddressType ipMode]) {
     if (bindAddress == null) throw ArgumentError.notNull('bindAddress');
 

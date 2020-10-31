@@ -27,7 +27,7 @@ enum ConnectionState {
 abstract class Connection {
   /// The remote end point of this Connection.  This is the end point that
   /// this connection is connected to (i.e. the other device).
-  IPEndPoint get endpoint;
+  IPEndpoint get endpoint;
 
   /// The layer 3 protocol used to send messages over the connection.
   InternetAddressType get ipMode;
@@ -35,11 +35,11 @@ abstract class Connection {
   /// The state of this connection.
   ConnectionState state = ConnectionState.not_connected;
 
-  /// Called when a message has been received. [onDataReceive] is invoked
-  /// everytime a message is received from the end point of this connection.
+  /// Called when a message has been received from the end point of this
+  /// connection.
   ///
-  /// This should be assigned before [connect] is called. Otherwise, it may
-  /// not be executed.
+  /// This should be assigned before [connect] is called. Otherwise, some
+  /// packets may be missed.
   ///
   /// After this function completes, the [msg] will be reallocated using
   /// [ByteBuffer.release], so be sure to extract what you need from it

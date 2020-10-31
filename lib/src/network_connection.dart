@@ -27,8 +27,8 @@ abstract class NetworkConnection extends Connection {
 
   /// The remote end point of this connection.
   ///
-  /// This is the end point of the other device given as an [IPEndPoint].
-  IPEndPoint get remoteEndpoint;
+  /// This is the end point of the other device given as an [IPEndpoint].
+  IPEndpoint get remoteEndpoint;
 
   /// Returns the address of the [remoteEndpoint] as a 32-bit IPv4 address.
   int get ipv4Address {
@@ -45,7 +45,7 @@ abstract class NetworkConnection extends Connection {
 abstract class NetworkConnectionListener extends ConnectionListener {
 
   /// The local end point the listener is listening for new clients on.
-  IPEndPoint get endpoint;
+  IPEndpoint get endpoint;
 
   /// The IP mode used to listen for and send data over connections.
   InternetAddressType get ipMode;

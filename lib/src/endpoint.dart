@@ -3,15 +3,15 @@ import 'dart:io';
 import 'package:quiver/core.dart';
 
 /// The address and port of an internet endpoint.
-class IPEndPoint {
+class IPEndpoint {
   final InternetAddress address;
   final int port;
 
-  IPEndPoint(this.address, this.port);
+  IPEndpoint(this.address, this.port);
 
   @override
   bool operator ==(Object other) {
-    return other is IPEndPoint &&
+    return other is IPEndpoint &&
         other.address == address &&
         other.port == port;
   }

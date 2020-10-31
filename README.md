@@ -1,22 +1,6 @@
-A library for Dart developers.
-
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+A Dart port of [willardf's](https://github.com/willardf)
+[Hazel Networking Library](https://github.com/willardf/Hazel-Networking).
 
 ## Usage
 
-A simple usage example:
-
-```dart
-import 'package:hazel_dart/hazel.dart';
-
-main() {
-  var awesome = new Awesome();
-}
-```
-
-## Features and bugs
-
-Please file feature requests and bugs at the [issue tracker][tracker].
-
-[tracker]: http://example.com/issues/replaceme
+*TODO*

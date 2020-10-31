@@ -2,9 +2,9 @@
 /// [Hazel Networking Library](https://github.com/willardf/Hazel-Networking),
 /// originally written in C#.
 ///
-/// Although this port does its best to stay true to the original, the names
-/// and usages of some things have admittedly been altered to better suit the
-/// Dart language conventions, as well as the language's limitations.
+/// Although this port tries stay true to the original, some names and
+/// functionality have been altered for convenience purposes and to fit
+/// better with the Dart language.
 ///
 /// Much of the documentation for this port was taken directly (and often
 /// altered) from the original.

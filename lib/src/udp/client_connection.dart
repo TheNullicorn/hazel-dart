@@ -20,7 +20,7 @@ const manageReliablesInterval = Duration(milliseconds: 100);
 
 class BasicUdpClientConnection extends UdpConnection with UdpProtocol {
   @override
-  final IPEndPoint remoteEndpoint;
+  final IPEndpoint remoteEndpoint;
 
   @override
   final InternetAddressType ipMode;
@@ -59,7 +59,7 @@ class BasicUdpClientConnection extends UdpConnection with UdpProtocol {
   }
 
   @override
-  IPEndPoint get endpoint => remoteEndpoint;
+  IPEndpoint get endpoint => remoteEndpoint;
 
   /// Resends any reliable packets that have not been acknowledged.
   void _manageReliablePackets(Timer timer) =>

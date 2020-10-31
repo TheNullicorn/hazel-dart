@@ -55,7 +55,7 @@ class UdpSendOption {
 }
 
 mixin UdpProtocol on UdpConnection {
-  static Future<RawDatagramSocket> createSocket(IPEndPoint address) {
+  static Future<RawDatagramSocket> createSocket(IPEndpoint address) {
     return RawDatagramSocket.bind(address.address, address.port);
   }
 

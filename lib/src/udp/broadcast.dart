@@ -77,13 +77,9 @@ class BroadcastPacket {
   final String data;
 
   /// The address of the device that broadcast the packet.
-  final IPEndPoint sender;
+  final IPEndpoint sender;
 
   /// The time when the packet was received.
-  ///
-  /// If the packet's [data] and [sender] were received multiple times, this is
-  /// most recent time when it was received (since [packets], [start] or
-  /// [clearPendingPackets] were called).
   final DateTime receiveTime;
 
   BroadcastPacket(this.data, this.receiveTime, this.sender);
@@ -110,7 +106,7 @@ class UdpBroadcastListener extends Stream<BroadcastPacket> {
   /// The UDP port that this listener will listen for messages on.
   final int port;
 
-  /// All subscribers to events for this listener.
+  /// All subscribers to this listener's events.
   final List<_BroadcastSubscriber> _subscribers = [];
 
   /// The UDP socket used to listen for message.
@@ -154,14 +150,14 @@ class UdpBroadcastListener extends Stream<BroadcastPacket> {
     }
   }
 
-  /// Internal handler for incoming packets.
+  /// Internal packet handler.
   void _handleReceive(Datagram datagram) {
     var receiveTime = DateTime.now();
 
     var data = datagram.data;
     if (data.length < 3 || data[0] != 4 || data[1] != 2) return;
 
-    var sender = IPEndPoint(datagram.address, datagram.port);
+    var sender = IPEndpoint(datagram.address, datagram.port);
     var msg = utf8.decode(data.sublist(2), allowMalformed: true);
 
     var packet = BroadcastPacket(msg, receiveTime, sender);
