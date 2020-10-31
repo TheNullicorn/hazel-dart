@@ -1,7 +1,12 @@
+# Metadata
 name: hazel_dart
-description: A Dart port of willardf's Hazel Networking Library.
 version: 0.0.1
-# homepage: https://www.example.com
+description: A Dart port of willardf's Hazel Networking Library.
+
+# Refs
+homepage: https://github.com/TheNullicorn/hazel-dart
+repository: https://github.com/TheNullicorn/hazel-dart
+issue_tracker: https://github.com/TheNullicorn/hazel-dart/issues
 
 environment:
   sdk: '>=2.8.1 <3.0.0'
@@ -12,5 +17,4 @@ dependencies:
   meta: ^1.2.3
 
 dev_dependencies:
-  pedantic: ^1.9.0
   test: ^1.14.4
