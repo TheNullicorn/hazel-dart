@@ -1,0 +1,16 @@
+name: hazel_dart
+description: A Dart port of willardf's Hazel Networking Library.
+version: 0.0.1
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=2.8.1 <3.0.0'
+
+dependencies:
+  async: ^2.4.2
+  quiver: ^2.1.3
+  meta: ^1.2.3
+
+dev_dependencies:
+  pedantic: ^1.9.0
+  test: ^1.14.4
