@@ -7,6 +7,9 @@ import 'send_option.dart';
 final Pool<ByteBuffer> _pool = Pool(() => ByteBuffer());
 
 /// A buffer of binary data that can be read from and written to.
+///
+/// Some buffers may be pooled to conserve memory, so be sure to call
+/// [release] when you're done with a buffer.
 class ByteBuffer with Pooled {
   /// The underlying buffer.
   Uint8List _buf;
@@ -230,20 +233,20 @@ class ByteBuffer with Pooled {
   /// Read a string from the buffer with the provided encoding.
   ///
   /// If the string's [length] is not provided, it will be determined by
-  /// reading a VarInt from the buffer.
+  /// reading a packed-integer from the buffer first.
   ///
   /// If no [codec] is provided, UTF-8 is used by default.
   String readString({int length = -1, Encoding codec = utf8}) {
-    length = length >= 0 ? length : readVarInt();
+    length = length >= 0 ? length : readPackedInt32();
     return codec.decode(readBytes(length));
   }
 
   /// Read a certain number of bytes from the buffer.
   ///
-  /// If a [length] is not provided, the length will be read as a VarInt
-  /// before the byte array.
+  /// If a [length] is not provided, it will be determined by reading a
+  /// packed-integer from the buffer first.
   Uint8List readBytes([int length]) {
-    length ??= readVarInt();
+    length ??= readPackedInt32();
 
     var output = Uint8List(length);
     output.setRange(0, output.length, _buf, _offset + _readerIndex);
@@ -265,11 +268,11 @@ class ByteBuffer with Pooled {
     return readBytes(4).buffer.asByteData().getFloat32(0, endian);
   }
 
-  /// Read a variable-length integer from the buffer.
+  /// Read a variable-length integer (up to 5 bytes) from the buffer.
   ///
-  /// If the integer is encoded using more than 10 bytes, a [RangeError] is
-  /// thrown.
-  int readVarInt() {
+  /// If the integer is encoded using more than 5 bytes, only the first 5 are
+  /// read.
+  int readPackedInt32([bool signed = false]) {
     var result = 0;
     var totalBytesRead = 0;
     int lastRead;
@@ -280,13 +283,10 @@ class ByteBuffer with Pooled {
       result |= (value << (7 * totalBytesRead));
 
       totalBytesRead++;
-      if (totalBytesRead > 10) {
-        throw RangeError('VarInt is too big');
-      }
-    } while ((lastRead & 0x80) != 0);
+    } while ((lastRead & 0x80) != 0 && totalBytesRead < 5);
 
-    // Convert to signed int
-    return result.toSigned(7 * totalBytesRead + 1);
+    // Convert to signed if necessary
+    return signed ? result.toSigned(7 * totalBytesRead + 1) : result;
   }
 
   /// Read a 64-bit integer (8 bytes) from the buffer.
@@ -345,7 +345,7 @@ class ByteBuffer with Pooled {
   ///
   /// If no [codec] is provided, UTF-8 is used by default.
   void writeString(String value, [Encoding codec = utf8]) {
-    writePackedInt(value.length);
+    writePackedInt32(value.length);
     writeBytes(codec.encode(value));
   }
 
@@ -358,11 +358,11 @@ class ByteBuffer with Pooled {
     }
   }
 
-  /// Write an array of bytes to the buffer, prefixed by their length (as a
-  /// VarInt).
+  /// Write an array of bytes to the buffer, prefixed by their length as a
+  /// packed-integer.
   void writeBytesAndSize(Uint8List data, [int offset = 0, int length]) {
     length ??= data.length;
-    writePackedInt(length);
+    writePackedInt32(length);
     writeBytes(data, offset, length);
   }
 
@@ -397,14 +397,17 @@ class ByteBuffer with Pooled {
   }
 
   /// Write a variable-length integer to the buffer.
-  void writePackedInt(int value) {
+  ///
+  /// If the [value] takes up more than 32 bits, it will be truncated to fit
+  /// that limit.
+  void writePackedInt32(int value) {
+    value = value.toUnsigned(32);
     do {
-      var temp = value & 0x7F;
-      value = value.logicalShiftRight(7);
-      if (value != 0) {
-        temp |= 0x80;
-      }
+      var temp = value.toUnsigned(7);
+      if (value >= 0x80) temp |= 0x80;
+
       writeInt8(temp);
+      value = value.logicalShiftRight(7);
     } while (value != 0);
   }
 
