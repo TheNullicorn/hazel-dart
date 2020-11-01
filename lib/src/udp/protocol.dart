@@ -67,7 +67,7 @@ mixin UdpProtocol on UdpConnection {
   bool sendDisconnect([ByteBuffer msg]);
 
   @override
-  void send(ByteBuffer msg) {
+  void send(ByteBuffer msg, [Function() ackCallback]) {
     if (state != ConnectionState.connected) {
       throw StateError('Cannot send data while the connection is not open');
     }
@@ -76,7 +76,7 @@ mixin UdpProtocol on UdpConnection {
 
     if (msg.sendOption == SendOption.reliable) {
       keepAlive.resetKeepAliveTimer();
-      reliability.attachReliableId(buffer, 1);
+      reliability.attachReliableId(buffer, 1, ackCallback);
     }
     writeBytes(buffer);
   }
