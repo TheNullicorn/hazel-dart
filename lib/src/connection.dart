@@ -54,7 +54,7 @@ abstract class Connection {
   ///
   /// This should be assigned before [connect] is called. Otherwise, it may
   /// not be executed.
-  void Function(ByteBuffer msg, [String reason]) onDisconnected;
+  void Function(String reason, [ByteBuffer msg]) onDisconnected;
 
   /// Sends a number of bytes to the end point of the connection using the
   /// [SendOption] specified by the [msg]'s [sendOption][ByteBuffer.sendOption].
@@ -124,7 +124,7 @@ abstract class Connection {
   void invokeDisconnected(String reason, [ByteBuffer msg]) {
     if (onDisconnected == null) return;
     try {
-      onDisconnected(msg, reason);
+      onDisconnected(reason, msg);
     } catch (_) {}
   }
 }
