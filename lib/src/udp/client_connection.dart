@@ -172,8 +172,8 @@ class BasicUdpClientConnection extends UdpConnection with UdpProtocol {
   @override
   void close() {
     if (_disconnectCompleter != null && state == ConnectionState.connecting) {
-      _disconnectCompleter.completeError(SocketException(
-          'Remote disconnected during the handshake. See onDisconnected for more info.'));
+      _disconnectCompleter.completeError(
+          SocketException('Connection closed during handshake'));
       _disconnectCompleter = null;
     }
     state = ConnectionState.not_connected;
