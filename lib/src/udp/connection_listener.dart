@@ -104,6 +104,8 @@ class BasicUdpConnectionListener extends UdpConnectionListener {
     msg = ByteBuffer.pooledFromData(datagram.data);
     try {
       connection.handleReceive(msg);
+    } catch (e, st) {
+      Zone.current.handleUncaughtError(e, st);
     } finally {
       msg.release();
     }
@@ -112,7 +114,9 @@ class BasicUdpConnectionListener extends UdpConnectionListener {
   void _sendData(Uint8List data, IPEndpoint remoteEndpoint) {
     try {
       _socket.send(data, remoteEndpoint.address, remoteEndpoint.port);
-    } catch (_) {}
+    } catch (e, st) {
+      Zone.current.handleUncaughtError(e, st);
+    }
   }
 
   void _removeConnectionTo(IPEndpoint endpoint) {
@@ -152,9 +156,6 @@ class BasicUdpServerConnection extends UdpConnection with UdpProtocol {
 
   @override
   bool sendDisconnect([ByteBuffer msg]) {
-    if (state != ConnectionState.connected) return false;
-    state = ConnectionState.not_connected;
-
     var bytes;
     if (msg == null || msg.length == 0) {
       bytes = Uint8List(1);

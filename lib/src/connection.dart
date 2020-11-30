@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -106,7 +107,9 @@ abstract class Connection {
     try {
       if (onDataReceived == null) return;
       onDataReceived(this, msg, sendOption);
-    } catch (_) {} finally {
+    } catch (e, st) {
+      Zone.current.handleUncaughtError(e, st);
+    } finally {
       msg.release();
     }
   }
@@ -125,7 +128,9 @@ abstract class Connection {
     if (onDisconnected == null) return;
     try {
       onDisconnected(reason, msg);
-    } catch (_) {}
+    } catch (e, st) {
+      Zone.current.handleUncaughtError(e, st);
+    }
   }
 }
 

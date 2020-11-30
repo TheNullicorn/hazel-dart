@@ -164,6 +164,8 @@ class BasicUdpClientConnection extends UdpConnection with UdpProtocol {
       }
 
       handleReceive(msg);
+    } catch (e, st) {
+      Zone.current.handleUncaughtError(e, st);
     } finally {
       msg.release();
     }
@@ -172,8 +174,8 @@ class BasicUdpClientConnection extends UdpConnection with UdpProtocol {
   @override
   void close() {
     if (_disconnectCompleter != null && state == ConnectionState.connecting) {
-      _disconnectCompleter.completeError(
-          SocketException('Connection closed during handshake'));
+      _disconnectCompleter
+          .completeError(SocketException('Connection closed during handshake'));
       _disconnectCompleter = null;
     }
     state = ConnectionState.not_connected;

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'pool.dart';
@@ -144,14 +145,14 @@ class ByteBuffer with Pooled {
   /// Copies the data in this buffer into the provided array.
   void copyInto(Uint8List array) {
     var bytesToCopy = array.length;
-    if (bytesToCopy > length) bytesToCopy = length;
+    bytesToCopy = min(bytesToCopy, _writerIndex);
     array.setRange(0, bytesToCopy, _buf, _offset);
   }
 
   /// Copies the data in this buffer into a new byte array and returns the
   /// array.
   Uint8List toUint8List([int length]) {
-    var result = Uint8List(length ?? this.length);
+    var result = Uint8List(length ?? this._writerIndex);
     copyInto(result);
     return result;
   }
@@ -487,7 +488,7 @@ class ByteBuffer with Pooled {
   String toString() {
     var output = '[';
     if (messageTag != null) output += '$messageTag; ';
-    for (var i = _offset; i < _offset + _writerIndex; i++) {
+    for (var i = _offset; i < _offset + _writerIndex && i < _buf.length; i++) {
       output += _buf[i].toRadixString(16).padLeft(2, '0');
       if (i < _offset + _writerIndex - 1) output += ', ';
     }
@@ -498,6 +499,7 @@ class ByteBuffer with Pooled {
     if (_offset != 0) {
       throw UnsupportedError('Message buffers cannot be cleared');
     }
+    _sendOption = sendOption;
     _readerIndex = 0;
     _writerIndex = 0;
     if (sendOption == null) return;

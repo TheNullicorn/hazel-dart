@@ -163,9 +163,12 @@ mixin UdpProtocol on UdpConnection {
   }
 
   /// Called when the socket has been disconnected at the remote host.
-  void disconnectRemote(String reason, [ByteBuffer msg]) async {
+  void disconnectRemote(String reason, [ByteBuffer msg]) {
+    if (state == ConnectionState.not_connected) return;
+    state = ConnectionState.not_connected;
+
     try {
-      if (await sendDisconnect(null)) invokeDisconnected(reason, msg);
+      if (sendDisconnect(null)) invokeDisconnected(reason, msg);
     } finally {
       close();
     }
@@ -173,9 +176,12 @@ mixin UdpProtocol on UdpConnection {
 
   /// Called when socket is disconnected internally.
   void disconnectInternal(HazelInternalError error, [String reason]) {
+    if (state == ConnectionState.not_connected) return;
+    state = ConnectionState.not_connected;
+
     var handler = onInternalDisconnect;
     if (handler != null) {
-      var messageToRemote = onInternalDisconnect?.call(error);
+      var messageToRemote = handler(error);
       if (messageToRemote != null) {
         disconnect(reason, messageToRemote);
         return;
@@ -186,10 +192,15 @@ mixin UdpProtocol on UdpConnection {
 
   @override
   void disconnect(String reason, [ByteBuffer msg]) async {
+    if (state == ConnectionState.not_connected) return;
+    state = ConnectionState.not_connected;
+
+    var disconnectSent = false;
     try {
-      if (await sendDisconnect(msg)) invokeDisconnected(reason, msg);
-    } finally {
+      disconnectSent = sendDisconnect(msg);
       close();
+    } finally {
+      if (disconnectSent) invokeDisconnected(reason, msg);
     }
   }
 }
